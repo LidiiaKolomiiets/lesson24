@@ -1,0 +1,12 @@
+.message-text{
+    display: none;
+}
+.from-name{
+    margin: 0 10px 0;
+}
+.list-message{
+    list-style: none;
+}
+.item-list{
+    padding: 10px;
+}
