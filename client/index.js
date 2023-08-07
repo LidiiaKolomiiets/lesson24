@@ -2,6 +2,10 @@ const messageText = document.querySelector('.message-text');
 
 const messageValueText = document.querySelector('.message');
 
+const fromName = document.querySelector('.from-name');
+
+const text = document.querySelector('.text')
+
 const namesClient = {
 
 }
@@ -15,45 +19,45 @@ document.querySelector('.btn-connect').onclick = () => {
     if (name) {
         namesClient.name = name;
         connectText.innerHTML = '';
-        messageText.style.display = 'flex'
-    }
+        messageText.style.display = 'flex';
+        fromName.innerHTML = 'Message from ' + namesClient.name;
 
-    const fromName = document.querySelector('.from-name');
+        const ws = new WebSocket('ws://localhost:5553');
 
-    fromName.innerHTML = 'Message from ' + namesClient.name;
+        ws.onopen = () => {
 
-    const ws = new WebSocket('ws://localhost:5553');
-
-    ws.onopen = () => {
-
-        document.querySelector('.btn-send').onclick = () => {
-
-
-            const message = messageValueText.value.trim();
-            if (message) {
-                const messageObj = {
-                    name: namesClient.name,
-                    message: message
+            document.querySelector('.btn-send').onclick = () => {
+    
+    
+                const message = messageValueText.value.trim();
+                if (message) {
+                    const messageObj = {
+                        name: namesClient.name,
+                        message: message
+                    }
+                    ws.send(JSON.stringify(messageObj));
                 }
-                ws.send(JSON.stringify(messageObj));
+                messageValueText.value = ''
             }
-            messageValueText.value = ''
+    
         }
+        ws.onmessage = messageEvent => {
 
+            const listMessage = document.querySelector('.list-message');
+            const messageItem = document.createElement('li');
+            messageItem.classList.add('item-list')
+            listMessage.appendChild(messageItem);
+    
+            const date = new Date;
+            const msg = JSON.parse(messageEvent.data);
+    
+            messageItem.textContent = '[' + date.toLocaleTimeString() + '] ' + msg.name + ': ' + msg.message;
+        }
+    }
+    else {
+        text.textContent = 'Error. Enter your name!'
     }
 
-    ws.onmessage = messageEvent => {
-
-        const listMessage = document.querySelector('.list-message');
-        const messageItem = document.createElement('li');
-        messageItem.classList.add('item-list')
-        listMessage.appendChild(messageItem);
-
-        const date = new Date;
-        const msg = JSON.parse(messageEvent.data);
-        
-        messageItem.textContent = '[' + date.toLocaleTimeString() + '] ' + msg.name + ': ' + msg.message;
-    }
 }
 
 
